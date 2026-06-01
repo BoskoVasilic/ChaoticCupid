@@ -10,9 +10,11 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+app.MapHub<PersonHub>("/personHub");
 app.MapHub<CupidonHub>("/cupidonHub");
 
 Console.WriteLine("=== Haotični Kupidon - Server ===");
-Console.WriteLine("Hub:   https://localhost:7001/cupidonHub");
+Console.WriteLine("PersonHub:   https://localhost:7001/personHub");
+Console.WriteLine("CupidonHub: https://localhost:7001/cupidonHub");
 
 app.Run();

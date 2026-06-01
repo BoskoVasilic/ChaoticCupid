@@ -9,55 +9,14 @@ namespace ChaoticCupid.Hubs
     public class CupidonHub : Hub
     {
         private readonly PersonRegistry _registry;
+        private readonly IHubContext<PersonHub> _personHubContext;
 
-        public CupidonHub(PersonRegistry registry)
+        public CupidonHub(PersonRegistry registry, IHubContext<PersonHub> personHubContext)
         {
             _registry = registry;
+            _personHubContext = personHubContext;
         }
 
-        public async Task<string> InitSinglePerson(string username, string city, int age, string phoneNumber)
-        {
-            var person = new Person
-            {
-                Username = username,
-                City = city,
-                Age = age,
-                PhoneNumber = phoneNumber,
-                ConnectionId = Context.ConnectionId
-            };
-
-            if (!_registry.TryRegister(person))
-                return $"GRESKA: Korisnik '{username}' vec postoji.";
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, "love-letters");
-
-            Console.WriteLine($"[Hub] Subscriber: {username} ({city}, {age}g) -> 'love-letters'");
-            return "OK";
-        }
-
-        public async Task AcknowledgeLetter(string username)
-        {
-            _registry.SetWaiting(username, false);
-            Console.WriteLine($"[Hub] {username} potvrdio prijem.");
-            await Task.CompletedTask;
-        }
-
-        public async Task<string> BlockUser(string blockerUsername, string targetUsername)
-        {
-            if (_registry.GetByUsername(targetUsername) == null)
-                return $"GRESKA: Korisnik '{targetUsername}' ne postoji.";
-
-            _registry.BlockUser(blockerUsername, targetUsername);
-            Console.WriteLine($"[Hub] {blockerUsername} blokirao {targetUsername}.");
-            return "OK";
-        }
-
-        public override async Task OnDisconnectedAsync(Exception? exception)
-        {
-            _registry.RemoveByConnectionId(Context.ConnectionId);
-            Console.WriteLine($"[Hub] Konekcija prekinuta: {Context.ConnectionId}");
-            await base.OnDisconnectedAsync(exception);
-        }
 
         public async Task PublishLetters()
         {
@@ -135,7 +94,7 @@ namespace ChaoticCupid.Hubs
 
                 _registry.SetWaiting(recipient.Username, true);
 
-                await Clients.Client(recipient.ConnectionId)
+                await _personHubContext.Clients.Client(recipient.ConnectionId)
                 .SendAsync("ReceiveLetter",
                     bestSender.Username,
                     bestSender.City,

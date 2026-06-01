@@ -10,7 +10,7 @@ string phone = ReadPhoneNumber("Unesite broj telefona: ");
 
 
 var connection = new HubConnectionBuilder()
-    .WithUrl("https://localhost:7001/cupidonHub")
+    .WithUrl("https://localhost:7001/personHub")
     .Build();
 
 connection.On<string, string, int, string, string>("ReceiveLetter",
@@ -214,9 +214,9 @@ static string ReadPhoneNumber(string prompt)
             continue;
         }
 
-        if (digitsOnly.Length < 6 || digitsOnly.Length > 15)
+        if (digitsOnly.Length < 9 || digitsOnly.Length > 15)
         {
-            Console.WriteLine("Broj telefona mora imati izmedju 6 i 15 cifara.");
+            Console.WriteLine("Broj telefona mora imati izmedju 9 i 15 cifara.");
             continue;
         }
 
