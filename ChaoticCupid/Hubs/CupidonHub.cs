@@ -76,11 +76,8 @@ namespace ChaoticCupid.Hubs
             "Radujem se nasem susretu!",
             "Zelim da se upoznamo.",
             "Nisam zainteresovan/a za upoznavanje."
-        };
+            };
 
-#pragma warning disable SYSLIB0023
-            using var rng = new RNGCryptoServiceProvider();
-#pragma warning restore SYSLIB0023
 
             foreach (var recipient in persons)
             {
@@ -126,9 +123,9 @@ namespace ChaoticCupid.Hubs
                     continue;
                 }
 
-                byte[] msgBytes = new byte[4];
-                rng.GetBytes(msgBytes);
-                int msgIndex = (int)(BitConverter.ToUInt32(msgBytes, 0) % (uint)messages.Length);
+                byte[] bytes = new byte[4];
+                RandomNumberGenerator.Fill(bytes);
+                int msgIndex = (int)(BitConverter.ToUInt32(bytes, 0) % (uint)messages.Length);
                 string chosenMessage = messages[msgIndex];
 
                 bool isNotInterested = chosenMessage == "Nisam zainteresovan/a za upoznavanje.";

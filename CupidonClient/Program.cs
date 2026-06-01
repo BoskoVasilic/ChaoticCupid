@@ -3,15 +3,7 @@
 Console.WriteLine("=== HAOTIČNI KUPIDON ===");
 
 var connection = new HubConnectionBuilder()
-    .WithUrl("https://localhost:7001/cupidonHub", options =>
-    {
-        options.HttpMessageHandlerFactory = _ => new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback =
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-    })
-    .WithAutomaticReconnect()
+    .WithUrl("https://localhost:7001/cupidonHub")
     .Build();
 
 try
@@ -43,7 +35,7 @@ var timerTask = Task.Run(async () =>
         {
             Console.WriteLine("\n[Kupidon] Automatsko slanje pisama...");
             await connection.InvokeAsync("PublishLetters", cts.Token);
-            Console.WriteLine("[Kupidon] Signal prosledjen. Sledece za 60 sekundi.\n");
+            Console.WriteLine("[Kupidon] Pisma prosledjena. Sledeca za 60 sekundi.\n");
         }
         catch (Exception ex) when (!cts.Token.IsCancellationRequested)
         {
@@ -67,9 +59,9 @@ while (true)
             try
             {
                 await connection.InvokeAsync("PublishLetters");
-                Console.WriteLine("Signal prosleden.");
+                Console.WriteLine("Signal prosledjen.");
             }
-            catch (Exception ex) { Console.WriteLine($"Greška: {ex.Message}"); }
+            catch (Exception ex) { Console.WriteLine($"Greska: {ex.Message}"); }
             break;
 
         case "exit":
